@@ -59,6 +59,14 @@ img { display: block; }
 .arrow { position: absolute; pointer-events: none; }
 .arrow svg { width: 100%; height: 100%; display: block; }
 
+.stage { touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+.stage.dragging { cursor: grabbing; }
+.stage.dragging .cam, .stage.dragging .bb { transition: none; }
+.maptools { position: absolute; left: 12px; top: 12px; z-index: 10; transform: translateZ(0); display: flex; flex-direction: column; border: 1px solid var(--ink); border-radius: 2px; overflow: hidden; background: var(--paper); }
+.maptools button { width: 40px; height: 40px; border: 0; background: transparent; color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
+.maptools button + button { border-top: 1px solid var(--rule); }
+.maptools button:hover { background: #EFE8DC; }
+.maptools button.on { background: var(--ink); color: #fff; }
 .controls { position: absolute; right: 12px; top: 12px; z-index: 10; transform: translateZ(0); display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; max-width: calc(100% - 24px); }
 .seg { display: flex; border: 1px solid var(--ink); border-radius: 2px; overflow: hidden; background: var(--paper); }
 .seg button { min-height: 40px; padding: 0 12px; border: 0; font-size: 13px; font-weight: 600; cursor: pointer; }

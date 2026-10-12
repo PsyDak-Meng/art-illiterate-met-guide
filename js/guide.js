@@ -76,6 +76,13 @@ const MARKERS = {
 2: [{ label: "Grand Staircase ↓", x: 109.5, y: 154, z: 6 }]
 };
 
+const VIEW0 = { dx: 0, dy: 0, zoom: 1, rot: 0 };
+const BASE_ROT = 40, TILT = 55;
+// Camera = base framing (follows the route) + the visitor's own pan / zoom / rotation.
+function cameraCss(b, v) {
+  const Z = b.Z * v.zoom;
+  return "transform: scale(" + Z.toFixed(3) + ") rotateX(" + TILT + "deg) rotateZ(" + (BASE_ROT + v.rot).toFixed(1) + "deg) translate3d(" + L(-(b.cx + v.dx)) + ", " + L(-(b.cy + v.dy)) + ", " + L(-b.cz) + ");";
+}
 function L(v) { return (Math.round(v * U * 1000) / 1000) + "cqw"; }
 function rgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
 function hex(a) { return "#" + a.map(function (v) { const s = Math.max(0, Math.min(255, Math.round(v))).toString(16); return s.length < 2 ? "0" + s : s; }).join(""); }
@@ -426,7 +433,7 @@ class Component extends DCLogic {
   onResize() { let n = false; try { n = window.innerWidth < 700; } catch (e) {} if (n !== this.state.narrow) this.setState({ narrow: n }); }
   go(p, openCard) {
     const n = Math.max(0, Math.min(STEPS.length - 1, p));
-    this.setState({ pos: n, floor: null, side: null, overview: false, drawer: !!openCard && STEPS[n].t === "stop" });
+    this.setState({ pos: n, floor: null, side: null, overview: false, view: null, drawer: !!openCard && STEPS[n].t === "stop" });
   }
   openSide(e, i) { const s = ERAS[e].side[i]; this.setState({ side: { e: e, i: i }, drawer: true, floor: s.fl, overview: false }); }
 
@@ -553,7 +560,11 @@ class Component extends DCLogic {
       cx = focus.px; cy = focus.py; cz = PIN_Z * 0.45;
       Z = (cur || sideSel) ? zoomF : zoomF * 0.65;
     }
-    const camera = "transform: scale(" + Z.toFixed(3) + ") rotateX(55deg) rotateZ(40deg) translate3d(" + L(-cx) + ", " + L(-cy) + ", " + L(-cz) + ");";
+    const camBase = { Z: Z, cx: cx, cy: cy, cz: cz };
+    const vw = this.state.view || VIEW0;
+    Z = Z * vw.zoom; cx = cx + vw.dx; cy = cy + vw.dy;
+    const rotZ = BASE_ROT + vw.rot;
+    const camera = cameraCss(camBase, vw);
     const labelScale = "scale(" + (Z > 1.2 ? 0.85 / Z : 1 / Z).toFixed(3) + ")";
     const pinScale = "scale(" + (1 / Z * (Z > 1.2 ? 1.1 : 1)).toFixed(3) + ")";
 
@@ -624,7 +635,7 @@ class Component extends DCLogic {
     const slab = box(0, 0, 203, 307, SLAB_H, 0, "#ECE4D6");
 
     return {
-      scene: { camera: camera, labelScale: labelScale, pinScale: pinScale, planeSize: "width: " + L(203) + "; height: " + L(307) + ";", slab: slab,
+      scene: { camera: camera, camBase: camBase, view: vw, bb: "rotateZ(" + (-rotZ).toFixed(1) + "deg) rotateX(-" + TILT + "deg)", labelScale: labelScale, pinScale: pinScale, planeSize: "width: " + L(203) + "; height: " + L(307) + ";", slab: slab,
         rooms: rooms, props: props, labels: labels, pins: pins, markers: markers, arrows: arrows },
       eras: eras,
       era: { num: era.num, name: era.name, dates: era.dates, where: era.where, trend: era.trend, why: era.why, walk: era.walk },
@@ -648,9 +659,9 @@ class Component extends DCLogic {
       f2Style: floor === 2 ? "background: #1C1A17; color: #FFFFFF;" : "background: transparent; color: #1C1A17;",
       overviewPressed: this.state.overview ? "true" : "false",
       viewLabel: this.state.overview ? "Follow me" : "Whole floor",
-      toggleView: function () { self.setState({ overview: !self.state.overview }); },
-      showF1: function () { self.setState({ floor: 1 }); },
-      showF2: function () { self.setState({ floor: 2 }); },
+      toggleView: function () { self.setState({ overview: !self.state.overview, view: null }); },
+      showF1: function () { self.setState({ floor: 1, view: null }); },
+      showF2: function () { self.setState({ floor: 2, view: null }); },
       next: function () { self.go(pos + 1); },
       prev: function () { self.go(pos - 1); },
       restart: function () { self.go(0); }

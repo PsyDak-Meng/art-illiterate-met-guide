@@ -14,7 +14,6 @@
   const CLOCK = '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l9 8-9 8"/></svg>';
   const CLOSE = '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-  const BB = "rotateZ(-40deg) rotateX(-55deg)";
 
   function boxHtml(b) {
     return '<div class="bx" style="' + b.wrap + '"><div class="t" style="' + b.top + '"></div><div class="s" style="' + b.south + '"></div><div class="e" style="' + b.east + '"></div></div>';
@@ -42,15 +41,15 @@
     }).join("");
 
     $("labels").innerHTML = sc.labels.map(function (z) {
-      return '<div class="anchor ' + z.cls + '" style="' + z.anchor + '"><div class="bb tag" style="transform: ' + BB + " " + sc.labelScale + " translate(-50%, -100%); " + z.look + '">' + esc(z.text) + "</div></div>";
+      return '<div class="anchor ' + z.cls + '" style="' + z.anchor + '"><div class="bb tag" style="transform: ' + sc.bb + " " + sc.labelScale + " translate(-50%, -100%); " + z.look + '">' + esc(z.text) + "</div></div>";
     }).join("");
 
     $("markers").innerHTML = sc.markers.map(function (m) {
-      return '<div class="anchor" style="' + m.anchor + '"><div class="bb marker" style="transform: ' + BB + " " + sc.labelScale + ' translate(-50%, -100%)"><span>' + esc(m.label) + "</span><span></span></div></div>";
+      return '<div class="anchor" style="' + m.anchor + '"><div class="bb marker" style="transform: ' + sc.bb + " " + sc.labelScale + ' translate(-50%, -100%)"><span>' + esc(m.label) + "</span><span></span></div></div>";
     }).join("");
 
     $("pins").innerHTML = sc.pins.map(function (p) {
-      return '<div class="anchor" style="' + p.anchor + '"><div class="bb pin" style="transform: ' + BB + " " + sc.pinScale + ' translate(-50%, -100%)">' +
+      return '<div class="anchor" style="' + p.anchor + '"><div class="bb pin" style="transform: ' + sc.bb + " " + sc.pinScale + ' translate(-50%, -100%)">' +
         '<div class="pin ' + p.bob + '">' + (p.here ? '<span class="here">' + esc(p.hereText) + "</span>" : "") +
         '<button class="' + p.cls + '" data-h="' + h(p.pick) + '" aria-label="' + esc(p.aria) + '" style="' + p.dot + '">' + esc(p.n) + "</button></div>" +
         '<span class="stem" style="' + p.stem + '"></span><span class="foot"></span></div></div>';
@@ -62,6 +61,130 @@
       '<div class="seg"><button data-h="' + h(v.showF1) + '" aria-pressed="' + v.f1Pressed + '" style="' + v.f1Style + '">Floor 1</button>' +
       '<button data-h="' + h(v.showF2) + '" aria-pressed="' + v.f2Pressed + '" style="' + v.f2Style + '">Floor 2</button></div>' +
       '<button class="btn-ghost" data-h="' + h(v.toggleView) + '" aria-pressed="' + v.overviewPressed + '">' + esc(v.viewLabel) + "</button>";
+    renderTools(v);
+  }
+
+  // ---------- free map navigation: drag to pan, wheel / pinch to zoom, twist or buttons to rotate ----------
+  const ICON = {
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    minus: '<path d="M5 12h14"/>',
+    rotl: '<path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v4h4"/>',
+    rotr: '<path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/>',
+    center: '<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>'
+  };
+  function icon(k) { return '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ICON[k] + "</svg>"; }
+  function curView() { return Object.assign({}, (lastV && lastV.scene.view) || VIEW0); }
+  function clampView(v) {
+    v.zoom = Math.min(6, Math.max(0.45, v.zoom));
+    v.rot = Math.min(45, Math.max(-35, v.rot));
+    v.dx = Math.min(180, Math.max(-180, v.dx));
+    v.dy = Math.min(220, Math.max(-220, v.dy));
+    return v;
+  }
+  function setView(patch) { comp.setState({ view: clampView(Object.assign(curView(), patch)) }); }
+  function renderTools(v) {
+    let el = $("maptools");
+    if (!el) { el = document.createElement("div"); el.id = "maptools"; el.className = "maptools"; el.setAttribute("role", "group"); el.setAttribute("aria-label", "Move the map"); $("stage").appendChild(el); }
+    const vw = v.scene.view; const moved = vw.dx || vw.dy || vw.zoom !== 1 || vw.rot;
+    const b = function (fn, k, label, extra) { return '<button data-h="' + h(fn) + '" aria-label="' + label + '" title="' + label + '"' + (extra || "") + ">" + icon(k) + "</button>"; };
+    el.innerHTML =
+      b(function () { setView({ zoom: curView().zoom * 1.4 }); }, "plus", "Zoom in") +
+      b(function () { setView({ zoom: curView().zoom / 1.4 }); }, "minus", "Zoom out") +
+      b(function () { setView({ rot: curView().rot - 15 }); }, "rotl", "Rotate left") +
+      b(function () { setView({ rot: curView().rot + 15 }); }, "rotr", "Rotate right") +
+      b(function () { comp.setState({ view: null }); }, "center", moved ? "Re-center on the route" : "Centered on the route", moved ? ' class="on"' : "");
+  }
+
+  const ptrs = new Map();
+  let drag = null, suppressClick = false, wheelTimer = 0, rafPending = false;
+  function applyCam(view) {
+    if (!lastV) return;
+    const css = cameraCss(lastV.scene.camBase, view);
+    $("cam1").setAttribute("style", css);
+    $("cam2").setAttribute("style", css);
+  }
+  function scheduleCam() {
+    if (rafPending) return; rafPending = true;
+    requestAnimationFrame(function () { rafPending = false; if (drag) applyCam(drag.view); });
+  }
+  function twoPointer() {
+    const a = Array.from(ptrs.values());
+    const dx = a[1].x - a[0].x, dy = a[1].y - a[0].y;
+    return { d: Math.hypot(dx, dy) || 1, ang: Math.atan2(dy, dx) * 180 / Math.PI };
+  }
+  function panBy(view, sx, sy) {
+    const stage = $("stage");
+    const unit = U * (stage.clientWidth / 100) * lastV.scene.camBase.Z * view.zoom;
+    if (!unit) return;
+    const x1 = sx / unit, y1 = sy / (unit * Math.cos(TILT * Math.PI / 180));
+    const r = (BASE_ROT + view.rot) * Math.PI / 180;
+    view.dx -= x1 * Math.cos(r) + y1 * Math.sin(r);
+    view.dy -= -x1 * Math.sin(r) + y1 * Math.cos(r);
+    clampView(view);
+  }
+  function startPinch() {
+    if (ptrs.size !== 2 || !drag) return;
+    const t = twoPointer();
+    drag.pinch = { d0: t.d, a0: t.ang, zoom0: drag.view.zoom, rot0: drag.view.rot };
+  }
+  function bindGestures() {
+    const stage = $("stage");
+    stage.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      if (e.target.closest(".controls, .maptools")) return;
+      ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (!drag) drag = { view: curView(), moved: false, sx: e.clientX, sy: e.clientY, pinch: null };
+      startPinch();
+    });
+    stage.addEventListener("pointermove", function (e) {
+      const p = ptrs.get(e.pointerId);
+      if (!p || !drag) return;
+      const dx = e.clientX - p.x, dy = e.clientY - p.y;
+      p.x = e.clientX; p.y = e.clientY;
+      if (!drag.moved && (ptrs.size >= 2 || Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 6)) {
+        drag.moved = true;
+        stage.classList.add("dragging");
+        try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+      if (!drag.moved) return;
+      if (ptrs.size >= 2 && drag.pinch) {
+        const t = twoPointer();
+        drag.view.zoom = drag.pinch.zoom0 * (t.d / drag.pinch.d0);
+        drag.view.rot = drag.pinch.rot0 + (t.ang - drag.pinch.a0);
+        clampView(drag.view);
+        panBy(drag.view, dx / 2, dy / 2);
+      } else {
+        panBy(drag.view, dx, dy);
+      }
+      scheduleCam();
+    });
+    function end(e) {
+      if (!ptrs.has(e.pointerId)) return;
+      ptrs.delete(e.pointerId);
+      if (ptrs.size === 1) { if (drag) drag.pinch = null; return; }
+      if (ptrs.size > 0 || !drag) return;
+      const d = drag; drag = null;
+      stage.classList.remove("dragging");
+      if (d.moved) {
+        suppressClick = true;
+        setTimeout(function () { suppressClick = false; }, 0);
+        comp.setState({ view: d.view });
+      }
+    }
+    stage.addEventListener("pointerup", end);
+    stage.addEventListener("pointercancel", end);
+    stage.addEventListener("wheel", function (e) {
+      if (e.target.closest(".controls, .maptools")) return;
+      e.preventDefault();
+      const v = drag ? drag.view : curView();
+      v.zoom *= Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015));
+      clampView(v);
+      stage.classList.add("dragging");
+      applyCam(v);
+      if (!drag && lastV) lastV.scene.view = v;
+      clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(function () { stage.classList.remove("dragging"); comp.setState({ view: v }); }, 180);
+    }, { passive: false });
   }
 
   function renderHud(v) {
@@ -216,6 +339,7 @@
   };
 
   document.addEventListener("click", function (ev) {
+    if (suppressClick) { ev.preventDefault(); ev.stopPropagation(); return; }
     const t = ev.target.closest("[data-h]");
     if (!t || t.disabled) return;
     const fn = H[+t.getAttribute("data-h")];
@@ -226,5 +350,6 @@
   });
 
   render();
+  bindGestures();
   comp.componentDidMount();
 })();
