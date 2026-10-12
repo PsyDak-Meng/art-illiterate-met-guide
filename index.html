@@ -20,12 +20,13 @@
 <div class="wrap">
 
 <header class="masthead">
-<div class="eyebrow">Unofficial walking guide · The Met Fifth Avenue</div>
-<h1>An Art Illiterate’s Guide to Art History at the Met</h1>
+<div class="lang" role="group" data-i18n-aria="langAria" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="zh" lang="zh-CN" aria-pressed="false">中文</button></div>
+<div class="eyebrow" data-i18n="eyebrow">Unofficial walking guide · The Met Fifth Avenue</div>
+<h1 data-i18n="h1">An Art Illiterate’s Guide to Art History at the Met</h1>
 </header>
 
 <div class="mapblock">
-<nav class="eras" id="eras" aria-label="Eras"></nav>
+<nav class="eras" id="eras" data-i18n-aria="erasAria" aria-label="Eras"></nav>
 <div class="navbar" id="navbar"></div>
 <div class="stagewrap">
 <div class="stage" id="stage">
@@ -45,8 +46,8 @@
 <div class="p3" id="pins"></div>
 </div>
 </div>
-<div class="controls" id="controls" role="group" aria-label="Map controls"></div>
-<div class="mapnote" aria-hidden="true">Drag to move · scroll or pinch to zoom · galleries traced from the Met’s official map</div>
+<div class="controls" id="controls" role="group" data-i18n-aria="mapControls" aria-label="Map controls"></div>
+<div class="mapnote" aria-hidden="true" data-i18n="mapnote">Drag to move · scroll or pinch to zoom · galleries traced from the Met’s official map</div>
 </div>
 <div class="hud-here" id="hud"></div>
 </div>
@@ -55,8 +56,8 @@
 <main id="panel"></main>
 
 <footer class="foot">
-<p>Independent guide, not affiliated with The Metropolitan Museum of Art. Gallery footprints are traced from the Met’s interactive map, and gallery numbers come from the Met’s collection data (October 2026). Works move and galleries close: the modern wing is closed for construction of the Tang Wing (planned 2030), and the Ancient West Asian and Cypriot galleries reopen in 2027. Check the Met’s official map before you go.</p>
-<p>Images: The Metropolitan Museum of Art, Open Access (public domain). Works still in copyright, or without an open-access image, are shown without one.</p>
+<p data-i18n="foot1">Independent guide, not affiliated with The Metropolitan Museum of Art. Gallery footprints are traced from the Met’s interactive map, and gallery numbers come from the Met’s collection data (October 2026). Works move and galleries close: the modern wing is closed for construction of the Tang Wing (planned 2030), and the Ancient West Asian and Cypriot galleries reopen in 2027. Check the Met’s official map before you go.</p>
+<p data-i18n="foot2">Images: The Metropolitan Museum of Art, Open Access (public domain). Works still in copyright, or without an open-access image, are shown without one.</p>
 </footer>
 
 </div>
@@ -66,6 +67,7 @@
 <noscript><p style="padding:24px;font-family:sans-serif">This guide needs JavaScript to draw the map and route.</p></noscript>
 <script src="js/runtime.js"></script>
 <script src="js/guide.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

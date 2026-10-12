@@ -10,6 +10,7 @@ An unofficial, chronological walking route through **The Metropolitan Museum of 
 - **8 eras, 41 stops** in chronological order, each era opening with its main trend and *why* art looked that way, plus a “how and why the style changed” explainer between eras.
 - **18 optional side trips** — must-sees from other cultures made in the same centuries (Benin, Chola India, Yuan China, the Islamic world, the American Wing…).
 - **Artwork cards** with an image, gallery number, “look for” and “the story”, opening as a side panel (a full-screen sheet on phones).
+- **English / 简体中文** switch in the top-right corner (remembers your choice; `?lang=zh` links straight to Chinese).
 - Suggested time per era (about 4 hours total), responsive layout for phone and desktop, keyboard and screen-reader friendly controls, and reduced-motion support.
 
 ## Run locally
@@ -39,6 +40,7 @@ index.html        page shell
 css/style.css     styles, 3D map styles and animations
 js/runtime.js     tiny state/re-render helper
 js/guide.js       eras, works, side trips, floor-plan geometry, route and camera logic
+js/i18n.js        UI strings and the Simplified Chinese translation, swapped in at runtime
 js/app.js         renders the map, timeline, panels and cards
 images/           51 artwork images (Met Open Access, public domain)
 ```

@@ -415,11 +415,11 @@ for (let i = 0; i < NODES.length - 1; i++) {
 }
 
 function nextText(st) {
-  if (!st) return "Finish";
-  if (st.t === "stop") return "Next: " + ERAS[st.e].stops[st.s].short;
-  if (st.t === "era") return "Enter Era " + ERAS[st.e].num;
-  if (st.t === "trans") return "What changed next?";
-  return "Finish the route";
+  if (!st) return t("finish");
+  if (st.t === "stop") return t("nextStop", ERAS[st.e].stops[st.s].short);
+  if (st.t === "era") return t("enterEra", ERAS[st.e].num);
+  if (st.t === "trans") return t("whatChanged");
+  return t("finishRoute");
 }
 
 class Component extends DCLogic {
@@ -475,7 +475,7 @@ class Component extends DCLogic {
       const b = box(g.x + 0.5, g.y + 0.5, Math.max(1, g.w - 1), Math.max(1, g.d - 1), s.h, SLAB_H, s.c, d.closed ? HATCH : "");
       const target = d.eras.indexOf(e) >= 0 ? e : d.eras[0];
       return { wrap: b.wrap, top: b.top, south: b.south, east: b.east, route: s.route, idle: !s.route,
-        aria: "Gallery " + g.num + ", " + d.name + (s.isCur ? " (you are here)" : ""),
+        aria: t("galleryAria", g.num, d.name) + (s.isCur ? t("youAreHereParen") : ""),
         pick: function () { if (s.route) self.go(ERA_START[target]); } };
     });
 
@@ -530,26 +530,26 @@ class Component extends DCLogic {
         if (active) dot = "width: " + sz + "px; height: " + sz + "px; background: " + eraInk + "; color: #FFFFFF; border: 2px solid #FFFFFF;";
         else if (seen) dot = "width: " + sz + "px; height: " + sz + "px; background: #D8CEBB; color: #1C1A17; border: 1.5px solid #8C8070;";
         else dot = "width: " + sz + "px; height: " + sz + "px; background: #FFFFFF; color: #1C1A17; border: 2px solid " + eraInk + ";";
-        pins.push({ n: i + 1, here: active, hereText: "You are here", bob: active ? "bob" : "", cls: active ? "pulse" : "",
+        pins.push({ n: i + 1, here: active, hereText: t("youAreHere"), bob: active ? "bob" : "", cls: active ? "pulse" : "",
           anchor: "left: " + L(s.px) + "; top: " + L(s.py) + "; transform: translateZ(" + L(active ? PIN_Z + 4 : PIN_Z) + ");",
           dot: dot, stem: "background: " + (active ? eraInk : "rgba(28,26,23,.55)") + ";",
-          aria: "Stop " + (i + 1) + ": " + s.title + ", " + s.gallery, pick: function () { self.go(ERA_START[e] + 1 + i, true); } });
+          aria: t("stopAria", i + 1, s.title, s.gallery), pick: function () { self.go(ERA_START[e] + 1 + i, true); } });
       });
       era.side.forEach(function (s, i) {
         if (s.fl !== floor) return;
         const active = sideSel === s;
-        pins.push({ n: "+", here: active, hereText: "Side trip", bob: active ? "bob" : "", cls: active ? "pulse" : "",
+        pins.push({ n: "+", here: active, hereText: t("sideTrip"), bob: active ? "bob" : "", cls: active ? "pulse" : "",
           anchor: "left: " + L(s.px) + "; top: " + L(s.py) + "; transform: translateZ(" + L(PIN_Z - 4) + ");",
           dot: "width: 26px; height: 26px; background: rgba(255,255,255,.92); color: #1C1A17; border: 2px dashed #1C1A17; font-size: 15px;",
-          stem: "background: rgba(28,26,23,.35);", aria: "Side trip: " + s.title + ", " + s.gallery, pick: function () { self.openSide(e, i); } });
+          stem: "background: rgba(28,26,23,.35);", aria: t("sideAria", s.title, s.gallery), pick: function () { self.openSide(e, i); } });
       });
     }
     const first = eraFirst(e);
     if (st.t === "trans" && first && first.fl === floor) {
-      pins.push({ n: era.num, here: true, hereText: "Head here next", bob: "bob", cls: "pulse",
+      pins.push({ n: era.num, here: true, hereText: t("headHere"), bob: "bob", cls: "pulse",
         anchor: "left: " + L(first.px) + "; top: " + L(first.py) + "; transform: translateZ(" + L(PIN_Z) + ");",
         dot: "width: 44px; height: 44px; background: " + eraInk + "; color: #FFFFFF; border: 2px solid #FFFFFF; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px;",
-        stem: "background: " + eraInk + ";", aria: "Next: Era " + era.num + ", " + era.name, pick: function () { self.go(ERA_START[e]); } });
+        stem: "background: " + eraInk + ";", aria: t("nextEraAria", era.num, era.name), pick: function () { self.go(ERA_START[e]); } });
     }
 
     // Camera: follow centers the current piece (or side trip); overview shows the whole floor
@@ -576,7 +576,7 @@ class Component extends DCLogic {
       if (isC) style = "background: " + ink(er.hue) + "; color: #FFFFFF; border: 1px solid " + ink(er.hue) + ";";
       else if (visited) style = "background: #E8E0D2; color: #1C1A17; border: 1px solid #CDBFA6;";
       else style = "background: #FBF8F2; color: #1C1A17; border: 1px solid #CDBFA6;";
-      return { num: er.num, name: er.name, dates: er.dates, time: "About " + TIMES[i] + " min", timeLine: "border-top: 1px solid " + (isC ? "rgba(255,255,255,.35)" : "#D9D1C1") + ";",
+      return { num: er.num, name: er.name, dates: er.dates, time: t("aboutMin", TIMES[i]), timeLine: "border-top: 1px solid " + (isC ? "rgba(255,255,255,.35)" : "#D9D1C1") + ";",
         style: style, dot: "background: " + (isC ? "#FFFFFF" : er.hue) + ";", ariaCur: isC ? "step" : "false", pick: function () { self.go(ERA_START[i]); } };
     });
 
@@ -586,12 +586,12 @@ class Component extends DCLogic {
         img: imgUrl(s.img), hasImg: !!s.img, noImg: !s.img, phBg: "background: " + mix(hue, IVORY, 0.78) + ";",
         border: isC ? "border: 2px solid " + eraInk + ";" : "border: 1px solid #D9D1C1;",
         numStyle: isC ? "background: " + eraInk + "; color: #FFFFFF;" : (seen ? "background: #D8CEBB; color: #1C1A17;" : "background: #FFFFFF; color: #1C1A17; border: 1.5px solid " + eraInk + ";"),
-        aria: "Open card: " + s.title + ", " + s.gallery, open: function () { self.go(ERA_START[e] + 1 + i, true); } };
+        aria: t("openCardAria", s.title, s.gallery), open: function () { self.go(ERA_START[e] + 1 + i, true); } };
     });
     const sides = era.side.map(function (s, i) {
-      return { title: s.title, byline: s.artist + " · " + s.date, gallery: s.gallery, badge: "Side trip · Floor " + s.fl,
+      return { title: s.title, byline: s.artist + " · " + s.date, gallery: s.gallery, badge: t("sideBadge", s.fl),
         img: imgUrl(s.img), hasImg: !!s.img, noImg: !s.img, phBg: "background: " + mix(hue, IVORY, 0.85) + ";",
-        aria: "Open side-trip card: " + s.title + ", " + s.gallery, open: function () { self.openSide(e, i); } };
+        aria: t("openSideAria", s.title, s.gallery), open: function () { self.openSide(e, i); } };
     });
 
     let card = { title: "", kicker: "", byline: "", medium: "", gallery: "", status: "", hasStatus: false, look: "", context: "", img: "", hasImg: false, noImg: true, imgNote: "", alt: "", ink: eraInk, isFirst: true, onRoute: true, nextLabel: "", next: function () {}, prev: function () {} };
@@ -600,10 +600,10 @@ class Component extends DCLogic {
       const nxt = STEPS[pos + 1];
       card = { title: shown.title, byline: shown.artist + " · " + shown.date, medium: shown.medium, gallery: shown.gallery,
         status: shown.status || "", hasStatus: !!shown.status, look: shown.look, context: shown.context,
-        img: imgUrl(shown.img), hasImg: !!shown.img, noImg: !shown.img, imgNote: shown.imgNote || "", alt: shown.title + ", " + shown.artist, ink: eraInk,
-        kicker: sideSel ? "Side trip · Era " + era.num + " · Floor " + sideSel.fl : "Era " + era.num + " · " + era.name + " · Stop " + (curStop + 1) + " of " + era.stops.length,
+        img: imgUrl(shown.img), hasImg: !!shown.img, noImg: !shown.img, imgNote: shown.imgNote || "", alt: shown.title + t("sep") + shown.artist, ink: eraInk,
+        kicker: sideSel ? t("sideKicker", era.num, sideSel.fl) : t("stopKicker", era.num, era.name, curStop + 1, era.stops.length),
         onRoute: !sideSel, isFirst: curStop === 0,
-        nextLabel: sideSel ? "Back to the route" : (nxt && nxt.t === "stop" ? "Next: " + ERAS[nxt.e].stops[nxt.s].short : (nxt && nxt.t === "trans" ? "End of this era — what changed?" : "Finish")),
+        nextLabel: sideSel ? t("backToRoute") : (nxt && nxt.t === "stop" ? t("nextStop", ERAS[nxt.e].stops[nxt.s].short) : (nxt && nxt.t === "trans" ? t("endOfEra") : t("finish"))),
         next: sideSel ? function () { self.setState({ side: null, drawer: false, floor: null }); } : function () { const n2 = STEPS[pos + 1]; self.go(pos + 1, n2 && n2.t === "stop"); },
         prev: function () { self.go(pos - 1, true); } };
     }
@@ -617,19 +617,19 @@ class Component extends DCLogic {
 
     let hereKicker, hereTitle, hereSub, hereTrend, progressA, progressB, hereImg = "";
     if (ended) {
-      hereKicker = "Route complete"; hereTitle = "All eight eras done"; hereSub = "Exit via the Great Hall, Floor 1"; hereTrend = "From rules for eternity to a single gesture.";
-      progressA = "Finished"; progressB = TOTAL + " of " + TOTAL + " stops";
+      hereKicker = t("routeComplete"); hereTitle = t("allDone"); hereSub = t("exitVia"); hereTrend = t("endTrend");
+      progressA = t("finished"); progressB = t("stopsOf", TOTAL, TOTAL);
     } else if (st.t === "trans") {
-      hereKicker = "Follow the arrows to Era " + era.num; hereTitle = era.name; hereSub = era.where; hereTrend = TRANS[st.e].headline + ".";
-      progressA = "Between eras"; progressB = ERAS[st.e].num + " → " + era.num;
+      hereKicker = t("followTo", era.num); hereTitle = era.name; hereSub = era.where; hereTrend = TRANS[st.e].headline + t("stop");
+      progressA = t("betweenEras"); progressB = ERAS[st.e].num + " → " + era.num;
     } else {
-      hereKicker = curStop >= 0 ? "You are here · Era " + era.num : "Follow the arrows · Era " + era.num;
+      hereKicker = curStop >= 0 ? t("hereEra", era.num) : t("followEra", era.num);
       hereTitle = cur ? cur.title : era.name;
       hereSub = cur ? (cur.gallery + (cur.status ? " · " + cur.status : "")) : era.where;
       hereImg = cur ? imgUrl(cur.img) : "";
       hereTrend = era.trend;
-      progressA = "Era " + era.num + (curStop >= 0 ? " · Stop " + (curStop + 1) + " of " + era.stops.length : " · Overview");
-      progressB = curStop >= 0 ? ("Stop " + (STOP_BASE[e] + curStop + 1) + " of " + TOTAL) : (era.stops.length + " key works · " + era.side.length + " side trips");
+      progressA = curStop >= 0 ? t("eraStop", era.num, curStop + 1, era.stops.length) : t("eraOverview", era.num);
+      progressB = curStop >= 0 ? t("stopOfTotal", STOP_BASE[e] + curStop + 1, TOTAL) : t("workCount", era.stops.length, era.side.length);
     }
 
     const slab = box(0, 0, 203, 307, SLAB_H, 0, "#ECE4D6");
@@ -645,7 +645,7 @@ class Component extends DCLogic {
       openCurrent: function () { self.setState({ drawer: true }); },
       hudOpen: !this.state.hudCollapsed, hudClosed: !!this.state.hudCollapsed,
       hudWrap: this.state.hudCollapsed ? "right: 0px; display: flex; justify-content: flex-end;" : "",
-      hereTab: ended ? "Done" : "Era " + era.num,
+      hereTab: ended ? t("done") : t("eraTab", era.num),
       toggleHud: function () { self.setState({ hudCollapsed: !self.state.hudCollapsed }); },
       recap: ERAS.map(function (er) { return { num: er.num, name: er.name, trend: er.trend, dot: "background: " + er.hue + ";" }; }),
       showEra: st.t === "era" || st.t === "stop", isOverview: st.t === "era", showTrans: st.t === "trans", showEnd: ended,
@@ -658,7 +658,7 @@ class Component extends DCLogic {
       f1Style: floor === 1 ? "background: #1C1A17; color: #FFFFFF;" : "background: transparent; color: #1C1A17;",
       f2Style: floor === 2 ? "background: #1C1A17; color: #FFFFFF;" : "background: transparent; color: #1C1A17;",
       overviewPressed: this.state.overview ? "true" : "false",
-      viewLabel: this.state.overview ? "Follow me" : "Whole floor",
+      viewLabel: this.state.overview ? t("follow") : t("whole"),
       toggleView: function () { self.setState({ overview: !self.state.overview, view: null }); },
       showF1: function () { self.setState({ floor: 1, view: null }); },
       showF2: function () { self.setState({ floor: 2, view: null }); },

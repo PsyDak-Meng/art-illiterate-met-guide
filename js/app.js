@@ -58,8 +58,8 @@
 
   function renderControls(v) {
     $("controls").innerHTML =
-      '<div class="seg"><button data-h="' + h(v.showF1) + '" aria-pressed="' + v.f1Pressed + '" style="' + v.f1Style + '">Floor 1</button>' +
-      '<button data-h="' + h(v.showF2) + '" aria-pressed="' + v.f2Pressed + '" style="' + v.f2Style + '">Floor 2</button></div>' +
+      '<div class="seg"><button data-h="' + h(v.showF1) + '" aria-pressed="' + v.f1Pressed + '" style="' + v.f1Style + '">' + esc(t("floor1")) + '</button>' +
+      '<button data-h="' + h(v.showF2) + '" aria-pressed="' + v.f2Pressed + '" style="' + v.f2Style + '">' + esc(t("floor2")) + '</button></div>' +
       '<button class="btn-ghost" data-h="' + h(v.toggleView) + '" aria-pressed="' + v.overviewPressed + '">' + esc(v.viewLabel) + "</button>";
     renderTools(v);
   }
@@ -84,15 +84,15 @@
   function setView(patch) { comp.setState({ view: clampView(Object.assign(curView(), patch)) }); }
   function renderTools(v) {
     let el = $("maptools");
-    if (!el) { el = document.createElement("div"); el.id = "maptools"; el.className = "maptools"; el.setAttribute("role", "group"); el.setAttribute("aria-label", "Move the map"); $("stage").appendChild(el); }
+    if (!el) { el = document.createElement("div"); el.id = "maptools"; el.className = "maptools"; el.setAttribute("role", "group"); el.setAttribute("aria-label", t("moveMap")); $("stage").appendChild(el); }
     const vw = v.scene.view; const moved = vw.dx || vw.dy || vw.zoom !== 1 || vw.rot;
     const b = function (fn, k, label, extra) { return '<button data-h="' + h(fn) + '" aria-label="' + label + '" title="' + label + '"' + (extra || "") + ">" + icon(k) + "</button>"; };
     el.innerHTML =
-      b(function () { setView({ zoom: curView().zoom * 1.4 }); }, "plus", "Zoom in") +
-      b(function () { setView({ zoom: curView().zoom / 1.4 }); }, "minus", "Zoom out") +
-      b(function () { setView({ rot: curView().rot - 15 }); }, "rotl", "Rotate left") +
-      b(function () { setView({ rot: curView().rot + 15 }); }, "rotr", "Rotate right") +
-      b(function () { comp.setState({ view: null }); }, "center", moved ? "Re-center on the route" : "Centered on the route", moved ? ' class="on"' : "");
+      b(function () { setView({ zoom: curView().zoom * 1.4 }); }, "plus", t("zoomIn")) +
+      b(function () { setView({ zoom: curView().zoom / 1.4 }); }, "minus", t("zoomOut")) +
+      b(function () { setView({ rot: curView().rot - 15 }); }, "rotl", t("rotL")) +
+      b(function () { setView({ rot: curView().rot + 15 }); }, "rotr", t("rotR")) +
+      b(function () { comp.setState({ view: null }); }, "center", moved ? t("recenter") : t("centered"), moved ? ' class="on"' : "");
   }
 
   const ptrs = new Map();
@@ -191,26 +191,26 @@
     const hud = $("hud");
     hud.setAttribute("style", v.hudWrap);
     if (v.hudClosed) {
-      hud.innerHTML = '<button class="hudtab lift" data-h="' + h(v.toggleHud) + '" aria-expanded="false" aria-label="Show where you are">' + CHEV3_L +
+      hud.innerHTML = '<button class="hudtab lift" data-h="' + h(v.toggleHud) + '" aria-expanded="false" aria-label="' + esc(t("hudShow")) + '">' + CHEV3_L +
         '<span class="dot" style="background:' + v.hereColor + '"></span><span class="v">' + esc(v.hereTab) + "</span></button>";
       return;
     }
     hud.innerHTML = '<div class="hudcard fadein">' +
       '<div style="display:flex;align-items:center;gap:8px"><span class="dot" style="background:' + v.hereColor + '"></span>' +
       '<span class="kicker" style="flex:1 1 auto;min-width:0;color:' + v.eraInk + '">' + esc(v.hereKicker) + "</span>" +
-      '<button class="lift" data-h="' + h(v.toggleHud) + '" aria-expanded="true" aria-label="Collapse to the side" style="flex:0 0 auto;min-width:40px;height:32px;margin:-4px -6px -4px 0;padding:0 4px;border:0;background:transparent;color:#3A352E;cursor:pointer;display:flex;align-items:center;justify-content:center">' + CHEV3_R + "</button></div>" +
+      '<button class="lift" data-h="' + h(v.toggleHud) + '" aria-expanded="true" aria-label="' + esc(t("hudCollapse")) + '" style="flex:0 0 auto;min-width:40px;height:32px;margin:-4px -6px -4px 0;padding:0 4px;border:0;background:transparent;color:#3A352E;cursor:pointer;display:flex;align-items:center;justify-content:center">' + CHEV3_R + "</button></div>" +
       '<div style="display:flex;gap:10px;align-items:flex-start">' +
       (v.hereHasImg ? '<img src="' + v.hereImg + '" alt="" style="width:44px;height:44px;object-fit:cover;flex:0 0 auto;border-radius:2px">' : "") +
       '<div style="display:flex;flex-direction:column;gap:2px;min-width:0"><div class="serif" style="font-size:20px;font-weight:600;line-height:1.1">' + esc(v.hereTitle) + "</div>" +
       '<div style="font-size:13px;color:#3A352E;line-height:1.35">' + esc(v.hereSub) + "</div></div></div>" +
       '<div class="serif" style="font-style:italic;font-size:16px;line-height:1.25">' + esc(v.hereTrend) + "</div>" +
-      (v.hereCanOpen ? '<div><button class="lift" data-h="' + h(v.openCurrent) + '" style="min-height:36px;padding:0 12px;margin-top:2px;background:#fff;color:#1C1A17;border:1px solid #1C1A17;border-radius:2px;font-size:14px;font-weight:600;cursor:pointer">Open the card</button></div>' : "") +
+      (v.hereCanOpen ? '<div><button class="lift" data-h="' + h(v.openCurrent) + '" style="min-height:36px;padding:0 12px;margin-top:2px;background:#fff;color:#1C1A17;border:1px solid #1C1A17;border-radius:2px;font-size:14px;font-weight:600;cursor:pointer">' + esc(t("openCard")) + '</button></div>' : "") +
       "</div>";
   }
 
   function renderNav(v) {
     $("navbar").innerHTML =
-      '<button class="btn line lift" data-h="' + h(v.prev) + '"' + (v.atStart ? " disabled" : "") + ' aria-label="Previous step" style="padding:0 16px">←<span class="hide-narrow"> Previous</span></button>' +
+      '<button class="btn line lift" data-h="' + h(v.prev) + '"' + (v.atStart ? " disabled" : "") + ' aria-label="' + esc(t("prevStep")) + '" style="padding:0 16px">←<span class="hide-narrow">' + esc(t("previous")) + '</span></button>' +
       '<div aria-live="polite" class="hide-narrow" style="flex:1 1 200px;text-align:center;font-size:14px;color:#3A352E"><strong style="font-weight:600">' + esc(v.progressA) + "</strong> · " + esc(v.progressB) + "</div>" +
       '<button class="btn solid lift" data-h="' + h(v.next) + '"' + (v.atEnd ? " disabled" : "") + ' style="flex:1 1 auto;max-width:420px;background:' + v.eraInk + ";border:1px solid " + v.eraInk + '">' + esc(v.nextLabel) + " →</button>";
   }
@@ -258,34 +258,34 @@
     if (v.showEra) {
       const er = v.era;
       html = '<div class="cols fadein">' +
-        '<section class="col-story" aria-label="About this era">' +
-        '<div style="display:flex;flex-direction:column;gap:4px"><div class="kicker" style="color:' + v.eraInk + '">Era ' + esc(er.num) + " of VIII · " + esc(er.dates) + "</div>" +
+        '<section class="col-story" aria-label="' + esc(t("aboutEra")) + '">' +
+        '<div style="display:flex;flex-direction:column;gap:4px"><div class="kicker" style="color:' + v.eraInk + '">' + esc(t("eraOf", er.num, er.dates)) + "</div>" +
         '<h2 class="h2">' + esc(er.name) + '</h2><div style="font-size:14px;color:#3A352E">' + esc(er.where) + "</div></div>" +
-        '<div class="box"><div class="kicker">In one line</div><div class="trend">' + esc(er.trend) + "</div>" +
-        '<div class="kicker" style="margin-top:8px">Why it looks this way</div><p style="margin:0;text-wrap:pretty">' + esc(er.why) + "</p></div>" +
-        '<p style="margin:0;font-size:15px"><strong style="font-weight:600">Getting there.</strong> ' + esc(er.walk) + "</p></section>" +
-        '<section class="col-works" aria-label="Key works"><h3 class="kicker" style="margin:0">On the route · tap for the card</h3>' +
+        '<div class="box"><div class="kicker">' + esc(t("inOneLine")) + '</div><div class="trend">' + esc(er.trend) + "</div>" +
+        '<div class="kicker" style="margin-top:8px">' + esc(t("whyLooks")) + '</div><p style="margin:0;text-wrap:pretty">' + esc(er.why) + "</p></div>" +
+        '<p style="margin:0;font-size:15px"><strong style="font-weight:600">' + esc(t("gettingThere")) + '</strong> ' + esc(er.walk) + "</p></section>" +
+        '<section class="col-works" aria-label="' + esc(t("keyWorks")) + '"><h3 class="kicker" style="margin:0">' + esc(t("onRoute")) + '</h3>' +
         '<div class="grid">' + v.works.map(function (w) { return tile(w, false, v.eraInk); }).join("") + "</div>" +
-        (v.hasSide ? '<h3 class="kicker" style="margin:12px 0 0">Meanwhile, nearby · optional side trips from the same centuries</h3><div class="grid">' + v.sides.map(function (w) { return tile(w, true, v.eraInk); }).join("") + "</div>" : "") +
-        (v.isOverview ? '<div><button class="btn solid lift" data-h="' + h(v.next) + '" style="background:' + v.eraInk + ";border:1px solid " + v.eraInk + '">Walk to stop 1 →</button></div>' : "") +
+        (v.hasSide ? '<h3 class="kicker" style="margin:12px 0 0">' + esc(t("meanwhile")) + '</h3><div class="grid">' + v.sides.map(function (w) { return tile(w, true, v.eraInk); }).join("") + "</div>" : "") +
+        (v.isOverview ? '<div><button class="btn solid lift" data-h="' + h(v.next) + '" style="background:' + v.eraInk + ";border:1px solid " + v.eraInk + '">' + esc(t("walkStop1")) + '</button></div>' : "") +
         "</section></div>";
     } else if (v.showTrans) {
       const tr = v.tr;
-      html = '<section class="trans fadein" aria-label="Between eras">' +
-        '<div class="kicker">Between eras · ' + esc(tr.fromNum) + " → " + esc(tr.toNum) + "</div>" +
+      html = '<section class="trans fadein" aria-label="' + esc(t("betweenEras")) + '">' +
+        '<div class="kicker">' + esc(t("betweenKicker", tr.fromNum, tr.toNum)) + "</div>" +
         '<div class="serif" style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;font-size:22px;color:#5E574D"><span>' + esc(tr.fromName) + '</span><span aria-hidden="true" style="color:' + v.eraInk + '">⟶</span><span style="color:#1C1A17;font-weight:600">' + esc(tr.toName) + "</span></div>" +
         '<h2 class="serif" style="margin:0;font-size:clamp(30px,4.4vw,48px);font-weight:600;line-height:1.06;text-wrap:balance">' + esc(tr.headline) + "</h2>" +
-        '<div class="kicker">How and why the style changed</div><ol>' +
+        '<div class="kicker">' + esc(t("howWhy")) + '</div><ol>' +
         tr.points.map(function (pt) { return '<li><span class="serif" style="flex:0 0 auto;font-size:26px;font-weight:600;line-height:1;color:' + v.eraInk + ';min-width:20px">' + pt.n + '</span><span style="text-wrap:pretty">' + esc(pt.text) + "</span></li>"; }).join("") +
-        '</ol><p class="walk"><strong style="font-weight:600">Walk on.</strong> ' + esc(tr.walk) + "</p>" +
+        '</ol><p class="walk"><strong style="font-weight:600">' + esc(t("walkOn")) + '</strong> ' + esc(tr.walk) + "</p>" +
         '<div><button class="btn solid lift" data-h="' + h(v.next) + '" style="background:' + v.eraInk + ";border:1px solid " + v.eraInk + '">' + esc(v.nextLabel) + " →</button></div></section>";
     } else if (v.showEnd) {
-      html = '<section class="trans fadein" aria-label="Route complete"><div class="kicker">Route complete</div>' +
-        '<h2 class="serif" style="margin:0;font-size:clamp(30px,4.4vw,48px);font-weight:600;line-height:1.06">You just walked through 5,000 years of art</h2>' +
-        '<p style="margin:0;text-wrap:pretty">From art that followed fixed rules so it could work forever, to a painting that records one body moving across one canvas. The whole story in eight lines:</p>' +
+      html = '<section class="trans fadein" aria-label="' + esc(t("routeComplete")) + '"><div class="kicker">' + esc(t("routeComplete")) + '</div>' +
+        '<h2 class="serif" style="margin:0;font-size:clamp(30px,4.4vw,48px);font-weight:600;line-height:1.06">' + esc(t("endTitle")) + '</h2>' +
+        '<p style="margin:0;text-wrap:pretty">' + esc(t("endText")) + '</p>' +
         '<ol class="recap">' + v.recap.map(function (r) { return '<li><span class="dot" style="margin-top:8px;' + r.dot + '"></span><span style="display:flex;flex-direction:column;gap:2px"><strong style="font-weight:600">' + esc(r.num) + " · " + esc(r.name) + '</strong><span class="serif" style="font-style:italic;font-size:19px;line-height:1.25">' + esc(r.trend) + "</span></span></li>"; }).join("") + "</ol>" +
-        '<p style="margin:0">To leave, take the Grand Staircase down to the Great Hall and the Fifth Avenue doors.</p>' +
-        '<div><button class="btn line lift" data-h="' + h(v.restart) + '">Start again</button></div></section>';
+        '<p style="margin:0">' + esc(t("endLeave")) + '</p>' +
+        '<div><button class="btn line lift" data-h="' + h(v.restart) + '">' + esc(t("restart")) + '</button></div></section>';
     }
     $("panel").innerHTML = html;
   }
@@ -299,18 +299,18 @@
       ? '<img src="' + c.img + '" alt="' + esc(c.alt) + '">'
       : '<div class="noimg"><span class="serif" style="font-style:italic;font-size:26px;line-height:1.15">' + esc(c.title) + '</span><span style="font-size:13px;color:#D9D1C1;max-width:300px">' + esc(c.imgNote) + "</span></div>";
     d.innerHTML = '<div class="drawer">' +
-      '<button class="scrim" data-h="' + h(v.closeDrawer) + '" aria-label="Close card"></button>' +
+      '<button class="scrim" data-h="' + h(v.closeDrawer) + '" aria-label="' + esc(t("closeCard")) + '"></button>' +
       '<aside class="sheet' + (drawerWasOpen ? "" : " slidein") + '" role="dialog" aria-modal="true" aria-label="' + esc(c.title) + '">' +
-      '<div class="top"><span class="kicker" style="color:' + c.ink + '">' + esc(c.kicker) + '</span><button class="iconbtn lift" id="drawer-close" data-h="' + h(v.closeDrawer) + '" aria-label="Close card">' + CLOSE + "</button></div>" +
+      '<div class="top"><span class="kicker" style="color:' + c.ink + '">' + esc(c.kicker) + '</span><button class="iconbtn lift" id="drawer-close" data-h="' + h(v.closeDrawer) + '" aria-label="' + esc(t("closeCard")) + '">' + CLOSE + "</button></div>" +
       '<div class="body"><div class="art">' + art + "</div>" +
       '<div class="txt"><div style="display:flex;flex-direction:column;gap:4px"><h2>' + esc(c.title) + '</h2><div style="font-size:15px;color:#3A352E">' + esc(c.byline) + '</div><div style="font-size:13px;color:#5E574D">' + esc(c.medium) + "</div></div>" +
       '<div style="display:flex;flex-wrap:wrap;gap:8px"><span class="chip" style="background:' + c.ink + ';color:#fff">' + esc(c.gallery) + "</span>" +
       (c.hasStatus ? '<span class="chip" style="background:#F4E3B5;color:#4A3A10">' + esc(c.status) + "</span>" : "") + "</div>" +
-      '<div style="display:flex;flex-direction:column;gap:4px"><div class="kicker" style="color:' + c.ink + '">Look for · the idea</div><p style="margin:0;text-wrap:pretty">' + esc(c.look) + "</p></div>" +
-      '<div style="display:flex;flex-direction:column;gap:4px"><div class="kicker" style="color:' + c.ink + '">The story</div><p style="margin:0;text-wrap:pretty">' + esc(c.context) + "</p></div>" +
+      '<div style="display:flex;flex-direction:column;gap:4px"><div class="kicker" style="color:' + c.ink + '">' + esc(t("lookFor")) + '</div><p style="margin:0;text-wrap:pretty">' + esc(c.look) + "</p></div>" +
+      '<div style="display:flex;flex-direction:column;gap:4px"><div class="kicker" style="color:' + c.ink + '">' + esc(t("story")) + '</div><p style="margin:0;text-wrap:pretty">' + esc(c.context) + "</p></div>" +
       "</div></div>" +
       '<div class="bottom">' +
-      (c.onRoute ? '<button class="btn line lift" data-h="' + h(c.prev) + '"' + (c.isFirst ? " disabled" : "") + ' aria-label="Previous work" style="padding:0 16px">←</button>' : "") +
+      (c.onRoute ? '<button class="btn line lift" data-h="' + h(c.prev) + '"' + (c.isFirst ? " disabled" : "") + ' aria-label="' + esc(t("prevWork")) + '" style="padding:0 16px">←</button>' : "") +
       '<button class="btn solid lift" data-h="' + h(c.next) + '" style="flex:1 1 auto;padding:0 16px;background:' + c.ink + ";border:1px solid " + c.ink + '">' + esc(c.nextLabel) + " →</button></div>" +
       "</aside></div>";
     if (!drawerWasOpen) { const btn = $("drawer-close"); if (btn) btn.focus({ preventScroll: true }); }
