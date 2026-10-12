@@ -150,6 +150,28 @@ img { display: block; }
 @keyframes slideup { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
 
 @media (max-width: 700px) {
+  .wrap { padding-top: 18px; gap: 14px; }
+  .masthead { gap: 6px; }
+  .eyebrow { font-size: 11px; letter-spacing: .1em; }
+  .masthead h1 { font-size: clamp(26px, 7.4vw, 34px); }
+  .mapblock { gap: 10px; }
+  .eras { gap: 6px; margin: 0 -16px; padding: 0 16px 4px; scroll-padding: 0 16px; }
+  .eras button { flex: 0 0 112px; min-height: 0; padding: 8px 10px; gap: 2px; }
+  .eras .num { font-size: 18px; }
+  .eras .nm { font-size: 12px; }
+  .eras .dt { display: none; }
+  .eras .tm { margin-top: 2px; padding-top: 4px; font-size: 11px; }
+  .navbar { gap: 8px; }
+  .navbar .btn { min-height: 46px; font-size: 14px; }
+  .stage { height: min(62vh, 520px); min-height: 360px; }
+  .cols { gap: 20px; }
+  .col-story, .col-works { flex-basis: 100%; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .tile .ti { font-size: 16px; }
+  .tile .by { font-size: 12px; }
+  .h2 { font-size: 30px; }
+  .trend { font-size: 21px; }
+  .box { padding: 14px 16px; }
   .hud-here { position: static; max-width: none; margin-top: 12px; }
   .zl-idle { display: none; }
   .hide-narrow { display: none; }
