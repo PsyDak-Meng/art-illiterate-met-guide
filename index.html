@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>An Art Illiterate’s Guide to Art History at the Met</title>
+<meta name="description" content="An unofficial, chronological walking route through The Met Fifth Avenue — 3D floor map, era-by-era explanations and cards for 59 must-see works.">
+<meta property="og:title" content="An Art Illiterate’s Guide to Art History at the Met">
+<meta property="og:description" content="Walk 5,000 years of art in order, with a 3D map that follows you through The Met.">
+<meta property="og:image" content="images/dendur.jpg">
+<meta name="theme-color" content="#F3EEE5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%237E2A2A'/%3E%3Cpath d='M7 24V11l9-5 9 5v13' fill='none' stroke='%23F5F0E7' stroke-width='2.4'/%3E%3Cpath d='M11 24v-9M16 24v-9M21 24v-9' stroke='%23F5F0E7' stroke-width='2.4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="page">
+<div class="wrap">
+
+<header class="masthead">
+<div class="eyebrow">Unofficial walking guide · The Met Fifth Avenue</div>
+<h1>An Art Illiterate’s Guide to Art History at the Met</h1>
+<p class="lede">No background needed. Walk one route through the museum, in the order art actually happened. The 3D map is built from the Met’s own floor plan, follows you from work to work, and every masterpiece has a card that explains it.</p>
+</header>
+
+<div class="mapblock">
+<div class="stagewrap">
+<div class="stage" id="stage">
+<div class="cam" id="cam1">
+<div class="plane p3" id="plane1">
+<div class="planeshadow" aria-hidden="true"></div>
+<div class="p3" id="slab" aria-hidden="true"></div>
+<div class="p3" id="rooms"></div>
+<div class="p3 nopoint" id="props" aria-hidden="true"></div>
+</div>
+</div>
+<div class="cam nopoint overlay" id="cam2">
+<div class="plane p3" id="plane2">
+<div class="p3" id="arrows" aria-hidden="true"></div>
+<div class="p3" id="labels" aria-hidden="true"></div>
+<div class="p3" id="markers" aria-hidden="true"></div>
+<div class="p3" id="pins"></div>
+</div>
+</div>
+<div class="controls" id="controls" role="group" aria-label="Map controls"></div>
+<div class="mapnote" aria-hidden="true">Galleries traced from the Met’s official map · Fifth Ave along the front edge</div>
+</div>
+<div class="hud-here" id="hud"></div>
+</div>
+<div class="navbar" id="navbar"></div>
+</div>
+
+<nav class="eras" id="eras" aria-label="Eras"></nav>
+
+<main id="panel"></main>
+
+<footer class="foot">
+<p>Independent guide, not affiliated with The Metropolitan Museum of Art. Gallery footprints are traced from the Met’s interactive map, and gallery numbers come from the Met’s collection data (October 2026). Works move and galleries close: the modern wing is closed for construction of the Tang Wing (planned 2030), and the Ancient West Asian and Cypriot galleries reopen in 2027. Check the Met’s official map before you go.</p>
+<p>Images: The Metropolitan Museum of Art, Open Access (public domain). Works still in copyright, or without an open-access image, are shown without one.</p>
+</footer>
+
+</div>
+</div>
+<div id="drawer"></div>
+
+<noscript><p style="padding:24px;font-family:sans-serif">This guide needs JavaScript to draw the map and route.</p></noscript>
+<script src="js/runtime.js"></script>
+<script src="js/guide.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
