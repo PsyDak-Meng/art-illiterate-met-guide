@@ -1,4 +1,4 @@
-# An Art Illiterate’s Guide to Art History at the Met
+# An Art Illiterate’s Guide to Art History at the MET
 
 An unofficial, chronological walking route through **The Metropolitan Museum of Art (Fifth Avenue)** for people with zero art background. Walk 5,000 years of art in order — Ancient Egypt to Jackson Pollock — with a 3D floor map that follows you from work to work.
 
